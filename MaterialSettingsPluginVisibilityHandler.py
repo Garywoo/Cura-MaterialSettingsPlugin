@@ -3,6 +3,7 @@
 
 from UM.Settings.Models.SettingVisibilityHandler import SettingVisibilityHandler
 from UM.Application import Application
+from cura.Machines.MaterialNode import MaterialNode
 
 from UM.FlameProfiler import pyqtSlot
 
@@ -38,6 +39,15 @@ class MaterialSettingsPluginVisibilityHandler(SettingVisibilityHandler):
         visibility_string = ";".join(self.getVisible())
         self._preferences.setValue("material_settings/visible_settings", visibility_string)
 
+
+    @pyqtSlot("QVariant")
+    def updateFromMaterialNode(self, material_node: MaterialNode) -> None:
+        container = material_node.container
+        if not container:
+            return
+        material_settings = set(container.getAllKeys())
+        if material_settings != self.getVisible():
+            self.setVisible(material_settings)
 
     ##  Set a single SettingDefinition's visible state
     @pyqtSlot(str, bool)

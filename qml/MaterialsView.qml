@@ -18,6 +18,19 @@ TabView
 
     property QtObject properties
     property var currentMaterialNode: null
+    property var addedSettingsModel: null
+
+    onCurrentMaterialNodeChanged:
+    {
+        updateSettingsVisibilityModel();
+    }
+
+    function updateSettingsVisibilityModel() {
+        if(addedSettingsModel != null && currentMaterialNode != null)
+        {
+            addedSettingsModel.visibilityHandler.updateFromMaterialNode(currentMaterialNode)
+        }
+    }
 
     property bool editingEnabled: false
     property string currency: UM.Preferences.getValue("cura/currency") ? UM.Preferences.getValue("cura/currency") : "€"
@@ -478,6 +491,7 @@ TabView
                         containerId: Cura.MachineManager.activeMachine != null ? Cura.MachineManager.activeMachine.definition.id: ""
                         visibilityHandler: Cura.MaterialSettingsVisibilityHandler { }
                         expanded: ["*"]
+                        exclude: [ "machine_settings", "command_line_settings" ]
                     }
 
                     delegate: Item
@@ -526,7 +540,6 @@ TabView
                                         settingLoader.item.enabled = base.editingEnabled;
                                     }
                                 }
-
 
                                 //Qt5.4.2 and earlier has a bug where this causes a crash: https://bugreports.qt.io/browse/QTBUG-35989
                                 //In addition, while it works for 5.5 and higher, the ordering of the actual combo box drop down changes,
@@ -618,6 +631,13 @@ TabView
                             }
                         }
                     }
+
+                    Component.onCompleted:
+                    {
+                        base.addedSettingsModel = addedSettingsModel;
+                        base.updateSettingsVisibilityModel();
+                    }
+
                 }
             }
 
