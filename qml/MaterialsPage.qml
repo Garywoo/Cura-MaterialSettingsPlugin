@@ -1,6 +1,6 @@
 // Copyright (c) 2018 Ultimaker B.V.
 // Uranium is released under the terms of the LGPLv3 or higher.
-// Copyright (c) 2020 fieldOfView
+// Copyright (c) 2020 Aldo Hoeben / fieldOfView
 // The MaterialSettingsPlugin is released under the terms of the AGPLv3 or higher.
 
 import QtQuick 2.7

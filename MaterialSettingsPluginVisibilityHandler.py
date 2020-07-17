@@ -1,8 +1,9 @@
-# Copyright (c) 2020 fieldOfView
+# Copyright (c) 2020 Aldo Hoeben / fieldOfView
 # The MaterialSettingsPlugin is released under the terms of the AGPLv3 or higher.
 
 from UM.Settings.Models.SettingVisibilityHandler import SettingVisibilityHandler
 from UM.Settings.InstanceContainer import DefinitionNotFoundError
+from UM.Logger import Logger
 
 from cura.CuraApplication import CuraApplication
 from cura.Machines.MaterialNode import MaterialNode
