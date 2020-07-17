@@ -720,7 +720,6 @@ TabView
         }
     }
 
-    property var helper: MaterialSettingsPlugin.Helper{}
     function setContainerPropertyValue(key, old_value, new_value)
     {
         if (old_value == new_value)
@@ -728,7 +727,7 @@ TabView
             return;
         }
         var base_file = Cura.ContainerManager.getContainerMetaDataEntry(base.containerId, "base_file");
-        helper.setMaterialContainersPropertyValue(base_file, key, new_value);
+        addedSettingsModel.visibilityHandler.setMaterialContainersPropertyValue(base_file, key, new_value);
     }
 
     function setMaterialPreferenceValue(material_guid, entry_name, new_value)

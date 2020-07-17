@@ -9,6 +9,8 @@ from cura.Machines.MaterialNode import MaterialNode
 
 from UM.FlameProfiler import pyqtSlot
 
+from typing import Any
+
 class MaterialSettingsPluginVisibilityHandler(SettingVisibilityHandler):
     def __init__(self, parent = None, *args, **kwargs):
         super().__init__(parent = parent, *args, **kwargs)
@@ -80,3 +82,10 @@ class MaterialSettingsPluginVisibilityHandler(SettingVisibilityHandler):
                 pass
 
         self.setVisible(visible_settings)
+
+    ##  Helper function: set value in all material containers based on a single base file
+    @pyqtSlot(str, str, "QVariant")
+    def setMaterialContainersPropertyValue(self, base_file: str, key: str, value: Any) -> None:
+        container_registry = CuraApplication.getInstance().getContainerRegistry()
+        for container in container_registry.findInstanceContainers(base_file=base_file):
+            container.setProperty(key, "value", value)
