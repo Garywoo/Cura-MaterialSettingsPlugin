@@ -515,6 +515,7 @@ TabView
                                 anchors.left: parent.left
                                 anchors.leftMargin: UM.Theme.getSize("default_margin").width
                                 anchors.right: parent.right
+                                anchors.rightMargin: -UM.Theme.getSize("default_margin").width
 
                                 property var definition: model
                                 property var settingDefinitionsModel: addedSettingsModel
@@ -553,6 +554,9 @@ TabView
                                     settingLoader.item.doDepthIndentation = false
                                     settingLoader.item.doQualityUserSettingEmphasis = false
                                     settingLoader.item.enabled = base.editingEnabled
+
+                                    // tweak the size of the setting control
+                                    settingLoader.item.children[0].children[2].width = Math.floor(UM.Theme.getSize("setting_control").width * 0.8)
                                 }
 
                                 sourceComponent:
