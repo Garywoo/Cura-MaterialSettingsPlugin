@@ -20,6 +20,7 @@ UM.Dialog {
     {
         if(visible)
         {
+            definitionsModel.visibilityHandler.updateFromMaterialNode(base.currentMaterialNode)
             updateFilter()
         }
     }

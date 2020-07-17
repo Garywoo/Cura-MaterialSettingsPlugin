@@ -29,14 +29,6 @@ class MaterialSettingsPlugin(Extension):
     def __init__(self) -> None:
         super().__init__()
 
-        default_material_settings = list(MaterialSettingsVisibilityHandler().getVisible()) # the default list
-        default_material_settings.append("material_flow")
-
-        CuraApplication.getInstance().getPreferences().addPreference(
-            "material_settings/visible_settings",
-            ";".join(default_material_settings)
-        )
-
         CuraApplication.getInstance().engineCreatedSignal.connect(self._onEngineCreated)
 
         if hasattr(CuraFormulaFunctions, "getValueFromContainerAtIndex"):

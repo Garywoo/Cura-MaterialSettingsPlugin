@@ -2,7 +2,9 @@
 # The MaterialSettingsPlugin is released under the terms of the AGPLv3 or higher.
 
 from UM.Settings.Models.SettingVisibilityHandler import SettingVisibilityHandler
-from UM.Application import Application
+from UM.Settings.InstanceContainer import DefinitionNotFoundError
+
+from cura.CuraApplication import CuraApplication
 from cura.Machines.MaterialNode import MaterialNode
 
 from UM.FlameProfiler import pyqtSlot
@@ -11,37 +13,53 @@ class MaterialSettingsPluginVisibilityHandler(SettingVisibilityHandler):
     def __init__(self, parent = None, *args, **kwargs):
         super().__init__(parent = parent, *args, **kwargs)
 
-        self._preferences = Application.getInstance().getPreferences()
-        self._preferences.preferenceChanged.connect(self._onPreferencesChanged)
+        self._selected_material_node = None
+        self._last_material_node = self._selected_material_node
+        self._last_visible_settings = set(self.getVisible())
 
-        self._onPreferencesChanged("material_settings/visible_settings")
-        self.visibilityChanged.connect(self._updatePreference)
+        self.visibilityChanged.connect(self._onVisibilityChanged)
 
-
-    def _onPreferencesChanged(self, name: str) -> None:
-        if name != "material_settings/visible_settings":
+    def _onVisibilityChanged(self) -> None:
+        if self._last_material_node != self._selected_material_node:
+            self._last_visible_settings = set(self.getVisible())
+            self._last_material_node = self._selected_material_node
             return
 
-        visibility_string = self._preferences.getValue("material_settings/visible_settings")
-        if not visibility_string:
-            self._preferences.resetPreference("material_settings/visible_settings")
+        new_visible_settings = set(self.getVisible())
+        added_settings = new_visible_settings - self._last_visible_settings
+        removed_settings = self._last_visible_settings - new_visible_settings
+        self._last_visible_settings = new_visible_settings
+
+        if not added_settings and not removed_settings:
             return
 
-        material_settings = set(visibility_string.split(";"))
+        base_file = self._selected_material_node.container.getMetaDataEntry("base_file")
+        containers = CuraApplication.getInstance().getContainerRegistry().findInstanceContainers(base_file=base_file)
+
+        for setting_key in removed_settings:
+            for container in containers:
+                container.removeInstance(setting_key)
+
         try:
-            material_settings.remove("material_diameter")
-        except KeyError:
-            pass
-        if material_settings != self.getVisible():
-            self.setVisible(material_settings)
+            definition = self._selected_material_node.container.getDefinition()
+        except DefinitionNotFoundError:
+            Logger.log("w", "Tried to set value of setting when the container has no definition")
+            return
 
-    def _updatePreference(self) -> None:
-        visibility_string = ";".join(self.getVisible())
-        self._preferences.setValue("material_settings/visible_settings", visibility_string)
+        for setting_key in added_settings:
+            setting_definition = definition.findDefinitions(key = setting_key)
+            if not setting_definition:
+                Logger.log("w", "Tried to set value of setting %s that has no instance in container %s or its definition %s", setting_key, container.getName(), definition.getName())
+                return
+            default_value = getattr(setting_definition[0], "default_value")
 
+            for container in containers:
+                definition = container.getDefinition()
+                container.setProperty(setting_key, "value", default_value)
 
     @pyqtSlot("QVariant")
     def updateFromMaterialNode(self, material_node: MaterialNode) -> None:
+        self._selected_material_node = material_node
         container = material_node.container
         if not container:
             return
