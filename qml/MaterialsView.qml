@@ -608,6 +608,7 @@ TabView
                             id: removeSettingButton
                             width: Math.round(UM.Theme.getSize("setting").height / 2)
                             height: UM.Theme.getSize("setting").height
+                            visible: base.editingEnabled
 
                             anchors.right: parent.right
                             anchors.rightMargin: UM.Theme.getSize("default_margin").width
