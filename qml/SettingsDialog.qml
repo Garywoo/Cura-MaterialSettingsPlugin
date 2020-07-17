@@ -91,7 +91,7 @@ UM.Dialog {
                 showAll: true
                 showAncestors: true
                 expanded: [ "*" ]
-                exclude: [ "machine_settings", "command_line_settings" ]
+                exclude: [ "machine_settings", "command_line_settings", "material_diameter" ]
             }
             delegate:Loader
             {

@@ -491,7 +491,7 @@ TabView
                         containerId: Cura.MachineManager.activeMachine != null ? Cura.MachineManager.activeMachine.definition.id: ""
                         visibilityHandler: Cura.MaterialSettingsVisibilityHandler { }
                         expanded: ["*"]
-                        exclude: [ "machine_settings", "command_line_settings" ]
+                        exclude: [ "machine_settings", "command_line_settings", "material_diameter" ]
                     }
 
                     delegate: Item
